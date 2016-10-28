@@ -4,6 +4,22 @@ using System.Collections.Generic;
 
 public class Deck : MonoBehaviour {
 
+	public Sprite suitClub;
+	public Sprite suitDiamond;
+	public Sprite suitHeart;
+	public Sprite suitSpade;
+
+	public Sprite[] faceSprites;
+	public Sprite[] rankSprites;
+
+	public Sprite cardBack;
+	public Sprite cardBackGold;
+	public Sprite cardFront;
+	public Sprite cardFrontGold;
+
+	public GameObject prefabSprite;
+	public GameObject prefabCard;
+
 	public bool _________________;
 
 	public PT_XMLReader xmlr;
@@ -16,7 +32,20 @@ public class Deck : MonoBehaviour {
 
 	public void InitDeck(string deckXMLText)
 	{
+		if (GameObject.Find ("_Deck") == null) {
+			GameObject anchorGO = new GameObject ("_Deck");
+			deckAnchor = anchorGO.transform;
+		}
+
+		dictSuits = new Dictionary<string, Sprite> () {
+			{ "C", suitClub },
+			{ "D", suitDiamond },
+			{ "H", suitHeart },
+			{ "S", suitSpade }
+		};
+
 		ReadDeck (deckXMLText);
+		MakeCards ();
 	}
 
 	public void ReadDeck (string deckXMLText)
@@ -69,6 +98,62 @@ public class Deck : MonoBehaviour {
 				cDef.face = xCardDefs [i].att ("face");
 			}
 			cardDefs.Add (cDef);
+		}
+	}
+
+	public CardDefinition GetCardDefinitionByRank (int rnk)
+	{
+		foreach (CardDefinition cd in cardDefs) {
+			if (cd.rank == rnk) {
+				return (cd);
+			}
+		}
+		return (null);
+	}
+
+	public void MakeCards()
+	{
+		cardNames = new List<string> ();
+		string[] letters = new string[] {"C", "D", "H", "S"};
+		foreach (string s in letters) {
+			for (int i = 0; i < 13; i++) {
+				cardNames.Add (s + (i + 1));
+			}
+		}
+
+		cards = new List<Card> ();
+		Sprite tS = null;
+		GameObject tGO = null;
+		SpriteRenderer tSR = null;
+
+		for (int i = 0; i < cardNames.Count; i++) {
+			GameObject cgo = Instantiate (prefabCard) as GameObject;
+			cgo.transform.parent = deckAnchor;
+			Card card = cgo.GetComponent<Card> ();
+
+			cgo.transform.localPosition = new Vector3 ((i % 13) * 3, i / 13 * 4, 0);
+
+			card.name = cardNames [i];
+			card.suit = card.name [0].ToString ();
+			card.rank = int.Parse (card.name.Substring (1));
+			if (card.suit == "D" || card.suit == "H") {
+				card.colS = "Red";
+				card.color = Color.red;
+			}
+
+			card.def = GetCardDefinitionByRank (card.rank);
+
+			foreach (Decorator deco in decorators) {
+				if (deco.type == "suit") {
+					tGO = Instantiate (prefabSprite) as GameObject;
+					tSR = tGO.GetComponent<SpriteRenderer> ();
+					tS = rankSprites [card.rank];
+					tSR.sprite = tS;
+					tSR.color = card.color;
+				}
+				tSR.sortingOrder = 1;
+				tGO.transform.parent = cgo.transform;
+			}
 		}
 	}
 }
