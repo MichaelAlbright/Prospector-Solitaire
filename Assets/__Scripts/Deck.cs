@@ -48,7 +48,27 @@ public class Deck : MonoBehaviour {
 		cardDefs = new List<CardDefinition> ();
 		PT_XMLHashList xCardDefs = xmlr.xml ["xml"] [0] ["card"];
 		for (int i = 0; i < xCardDefs.Count; i++) {
-
+			CardDefinition cDef = new CardDefinition ();
+			cDef.rank = int.Parse (xCardDefs [i].att ("rank"));
+			PT_XMLHashList xPips = xCardDefs [i] ["pip"];
+			if (xPips != null) {
+				for (int j = 0; j < xPips.Count; j++) {
+					deco = new Decorator ();
+					deco.type = "pip";
+					deco.flip = (xPips [j].att ("flip") == "1");
+					deco.loc.x = float.Parse (xDecos [j].att ("x"));
+					deco.loc.y = float.Parse (xDecos [j].att ("y"));
+					deco.loc.z = float.Parse (xDecos [j].att ("z"));
+					if (xPips [j].HasAtt ("scale")) {
+						deco.scale = float.Parse (xPips [j].att ("scale"));
+					}
+					cDef.pips.Add (deco);
+				}
+			}
+			if (xCardDefs [i].HasAtt ("face")) {
+				cDef.face = xCardDefs [i].att ("face");
+			}
+			cardDefs.Add (cDef);
 		}
 	}
 }
