@@ -17,5 +17,6 @@ public class Prospector : MonoBehaviour {
 	{
 		deck = GetComponent<Deck> ();
 		deck.InitDeck (deckXML.text);
+		Deck.Shuffle (ref deck.cards);
 	}
 }

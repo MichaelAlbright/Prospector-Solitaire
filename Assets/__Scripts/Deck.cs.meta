@@ -1,10 +1,21 @@
 fileFormatVersion: 2
 guid: b0d057d6a58788e498678c5800bf82e4
-timeCreated: 1477080810
+timeCreated: 1478278141
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - suitClub: {instanceID: 0}
+  - suitDiamond: {instanceID: 0}
+  - suitHeart: {instanceID: 0}
+  - suitSpade: {instanceID: 0}
+  - cardBack: {instanceID: 0}
+  - cardBackGold: {instanceID: 0}
+  - cardFront: {instanceID: 0}
+  - cardFrontGold: {instanceID: 0}
+  - prefabSprite: {instanceID: 0}
+  - prefabCard: {instanceID: 0}
+  - deckAnchor: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

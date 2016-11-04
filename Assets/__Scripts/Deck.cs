@@ -85,9 +85,9 @@ public class Deck : MonoBehaviour {
 					deco = new Decorator ();
 					deco.type = "pip";
 					deco.flip = (xPips [j].att ("flip") == "1");
-					deco.loc.x = float.Parse (xDecos [j].att ("x"));
-					deco.loc.y = float.Parse (xDecos [j].att ("y"));
-					deco.loc.z = float.Parse (xDecos [j].att ("z"));
+					deco.loc.x = float.Parse (xPips [j].att ("x"));
+					deco.loc.y = float.Parse (xPips [j].att ("y"));
+					deco.loc.z = float.Parse (xPips [j].att ("z"));
 					if (xPips [j].HasAtt ("scale")) {
 						deco.scale = float.Parse (xPips [j].att ("scale"));
 					}
@@ -147,13 +147,91 @@ public class Deck : MonoBehaviour {
 				if (deco.type == "suit") {
 					tGO = Instantiate (prefabSprite) as GameObject;
 					tSR = tGO.GetComponent<SpriteRenderer> ();
+					tSR.sprite = dictSuits [card.suit];
+				} else {
+					tGO = Instantiate (prefabSprite)as GameObject;
+					tSR = tGO.GetComponent<SpriteRenderer> ();
 					tS = rankSprites [card.rank];
 					tSR.sprite = tS;
 					tSR.color = card.color;
 				}
 				tSR.sortingOrder = 1;
 				tGO.transform.parent = cgo.transform;
+				tGO.transform.localPosition = deco.loc;
+				if (deco.flip) {
+					tGO.transform.rotation = Quaternion.Euler (0, 0, 180);
+				}
+				if (deco.scale != 1) {
+					tGO.transform.localScale = Vector3.one * deco.scale;
+				}
+				tGO.name = deco.type;
+				card.decoGOs.Add (tGO);
+			}
+
+			foreach (Decorator pip in card.def.pips) {
+				tGO = Instantiate (prefabSprite) as GameObject;
+				tGO.transform.parent = cgo.transform;
+				tGO.transform.localPosition = pip.loc;
+				if (pip.flip) {
+					tGO.transform.rotation = Quaternion.Euler (0, 0, 180);
+				}
+				if (pip.scale != 1) {
+					tGO.transform.localScale = Vector3.one * pip.scale;
+				}
+				tGO.name = "pip";
+				tSR = tGO.GetComponent<SpriteRenderer> ();
+				tSR.sprite = dictSuits [card.suit];
+				tSR.sortingOrder = 1;
+				card.pipGOs.Add (tGO);
+			}
+
+			if (card.def.face != "") {
+				tGO = Instantiate (prefabSprite) as GameObject;
+				tSR = tGO.GetComponent<SpriteRenderer> ();
+				tS = GetFace (card.def.face + card.suit);
+				tSR.sprite = tS;
+				tSR.sortingOrder = 1;
+				tGO.transform.parent = card.transform;
+				tGO.transform.localPosition = Vector3.zero;
+				tGO.name = "face";
+			}
+
+			tGO = Instantiate (prefabSprite) as GameObject;
+			tSR = tGO.GetComponent<SpriteRenderer> ();
+			tSR.sprite = cardBack;
+			tGO.transform.parent = card.transform;
+			tGO.transform.localPosition = Vector3.zero;
+			tSR.sortingOrder = 2;
+			tGO.name = "back";
+			card.back = tGO;
+
+			card.faceUp = false;
+
+			cards.Add (card);
+		}
+	}
+
+	public Sprite GetFace(string faceS)
+	{
+		foreach (Sprite tS in faceSprites) {
+			if (tS.name == faceS) {
+				return (tS);
 			}
 		}
+		return(null);
+	}
+
+	static public void Shuffle (ref List<Card> oCards)
+	{
+		List<Card> tCards = new List<Card> ();
+
+		int ndx;
+		tCards = new List<Card> ();
+		while (oCards.Count > 0) {
+			ndx = Random.Range (0, oCards.Count);
+			tCards.Add (oCards [ndx]);
+			oCards.RemoveAt (ndx);
+		}
+		oCards = tCards;
 	}
 }
