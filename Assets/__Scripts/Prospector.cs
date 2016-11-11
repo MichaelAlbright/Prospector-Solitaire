@@ -115,4 +115,20 @@ public class Prospector : MonoBehaviour {
 		cd.SetSortingLayerName (layout.discardPile.layerName);
 		cd.SetSortOrder (-100 + discardPile.Count);
 	}
+
+	void MoveToTarget(CardProspector cd)
+	{
+		if (target != null)
+			MoveToDiscard (target);
+		target = cd;
+		cd.state = CardState.target;
+		cd.transform.parent = layoutAnchor;
+		cd.transform.localPosition = new Vector3 (
+			layout.multiplier.x * layout.discardPile.x,
+			layout.multiplier.y * layout.discardPile.y,
+			-layout.discardPile.layerID);
+		cd.faceUp = true;
+		cd.SetSortingLayerName (layout.discardPile.layerName);
+		cd.SetSortOrder (0);
+	}
 }
