@@ -71,6 +71,9 @@ public class Prospector : MonoBehaviour {
 
 			tableau.Add (cp);
 		}
+
+		MoveToTarget (Draw ());
+		UpdateDrawPile ();
 	}
 
 	List<CardProspector> ConvertListCardsToLostCardProspectors(List<Card> lCD)
@@ -97,5 +100,19 @@ public class Prospector : MonoBehaviour {
 		case CardState.tableau:
 			break;
 		}
+	}
+
+	void MoveToDiscard(CardProspector cd)
+	{
+		cd.state = CardState.discard;
+		discardPile.Add (cd);
+		cd.transform.parent = layoutAnchor;
+		cd.transform.localPosition = new Vector3 (
+			layout.multiplier.x * layout.discardPile.x,
+			layout.multiplier.y * layout.discardPile.y,
+			-layout.discardPile.layerID + 0.5f);
+		cd.faceUp = true;
+		cd.SetSortingLayerName (layout.discardPile.layerName);
+		cd.SetSortOrder (-100 + discardPile.Count);
 	}
 }
