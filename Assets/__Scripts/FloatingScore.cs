@@ -55,6 +55,38 @@ public class FloatingScore : MonoBehaviour {
 
 	public void FSCallback(FloatingScore fs)
 	{
+		score += fs.score;
+	}
 
+	void Update ()
+	{
+		if (state == FSState.idle)
+			return;
+
+		float u = (Time.time - timeStart) / timeDuration;
+		float uC = Easing.Ease (u, easingCuve);
+		if (u < 0) {
+			state = FSState.pre;
+			transform.position = bezierPts [0];
+		} else {
+			if (u >= 1) {
+				uC = 1;
+				state = FSState.post;
+				if (reportFinishTo != null) {
+					reportFinishTo.SendMessage ("FSCallback", this);
+					Destroy (gameObject);
+				} else {
+					state = FSState.idle;
+				}
+			} else {
+				state = FSState.active;
+			}
+			Vector3 pos = Utils.Bezier (uC, bezierPts);
+			transform.position = pos;
+			if (fontSizes != null && fontSizes.Count > 0) {
+				int size = Mathf.RoundToInt (Utils.Bezier (uC, fontSizes));
+				GetComponent<GUIText> ().fontSize = size;
+			}
+		}
 	}
 }
